@@ -41,61 +41,14 @@
         z-index: -1;
       }
 
-      /* Custom cursor */
-      #cur-dot {
-        position: fixed;
-        width: 10px;
-        height: 10px;
-        background: #1b4f72;
-        border-radius: 50%;
-        pointer-events: none;
-        opacity: 0;
-        z-index: 10000;
-        transition: all 0.1s ease-out;
-        box-shadow: 0 0 15px rgba(27, 79, 114, 0.6);
+      /* Simple normal cursor */
+      * {
+        cursor: auto !important;
       }
 
+      #cur-dot,
       #cur-ring {
-        position: fixed;
-        width: 36px;
-        height: 36px;
-        border: 2px solid #1b4f72;
-        border-radius: 50%;
-        pointer-events: none;
-        opacity: 0;
-        z-index: 9999;
-        transition: all 0.15s ease-out;
-      }
-
-      body.cursor-active #cur-dot,
-      body.cursor-active #cur-ring {
-        opacity: 1;
-      }
-
-      #cur-dot.hover {
-        width: 13px;
-        height: 13px;
-        background: #c4570a;
-        box-shadow: 0 0 20px rgba(196, 87, 10, 0.7);
-      }
-
-      #cur-ring.hover {
-        width: 50px;
-        height: 50px;
-        border-color: #c4570a;
-        box-shadow: 0 0 15px rgba(196, 87, 10, 0.4);
-      }
-
-      /* Responsive cursor hide on mobile */
-      @media (max-width: 860px) {
-        #cur-dot,
-        #cur-ring {
-          display: none;
-        }
-
-        * {
-          cursor: auto !important;
-        }
+        display: none !important;
       }
 
       /* Navigation */
@@ -1656,45 +1609,6 @@
     </footer>
 
     <script>
-      // Custom Cursor Logic
-      const curDot = document.getElementById("cur-dot");
-      const curRing = document.getElementById("cur-ring");
-      let mouseX = 0;
-      let mouseY = 0;
-      let ringX = 0;
-      let ringY = 0;
-
-      document.addEventListener("mousemove", (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        document.body.classList.add("cursor-active");
-
-        curDot.style.left = mouseX - 5 + "px";
-        curDot.style.top = mouseY - 5 + "px";
-
-        const lerp = 0.13;
-        ringX += (mouseX - ringX) * lerp;
-        ringY += (mouseY - ringY) * lerp;
-        curRing.style.left = ringX - 18 + "px";
-        curRing.style.top = ringY - 18 + "px";
-      });
-
-      // Cursor hover effect on interactive elements
-      const interactiveElements = document.querySelectorAll(
-        "a, button, .chip, .pc, .cc, .ach-card",
-      );
-      interactiveElements.forEach((el) => {
-        el.addEventListener("mouseenter", () => {
-          curDot.classList.add("hover");
-          curRing.classList.add("hover");
-        });
-        el.addEventListener("mouseleave", () => {
-          curDot.classList.remove("hover");
-          curRing.classList.remove("hover");
-        });
-      });
-
       // Hamburger Menu
       const hamburger = document.getElementById("hamburger");
       const mobileNav = document.getElementById("mobile-nav");
