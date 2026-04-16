@@ -1,0 +1,1762 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gautam Reddy — IoT & Embedded Systems Engineer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "IBM Plex Sans", sans-serif;
+        background-color: #f4efe6;
+        color: #333;
+        line-height: 1.6;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Background SVG pattern */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><pattern id="circuit" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M10 50 L30 50 M70 50 L90 50 M50 10 L50 30 M50 70 L50 90" stroke="%231B4F72" stroke-width="1" fill="none" opacity="0.15"/><circle cx="30" cy="30" r="2" fill="%231B4F72" opacity="0.15"/><circle cx="70" cy="70" r="2" fill="%231B4F72" opacity="0.15"/></pattern></defs><rect width="100%" height="100%" fill="%23F4EFE6"/><rect width="100%" height="100%" fill="url(%23circuit)"/></svg>');
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      /* Custom cursor */
+      #cur-dot {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: #1b4f72;
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 10000;
+        transition: all 0.1s ease-out;
+        box-shadow: 0 0 15px rgba(27, 79, 114, 0.6);
+      }
+
+      #cur-ring {
+        position: fixed;
+        width: 36px;
+        height: 36px;
+        border: 2px solid #1b4f72;
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 9999;
+        transition: all 0.15s ease-out;
+      }
+
+      body.cursor-active #cur-dot,
+      body.cursor-active #cur-ring {
+        opacity: 1;
+      }
+
+      #cur-dot.hover {
+        width: 13px;
+        height: 13px;
+        background: #c4570a;
+        box-shadow: 0 0 20px rgba(196, 87, 10, 0.7);
+      }
+
+      #cur-ring.hover {
+        width: 50px;
+        height: 50px;
+        border-color: #c4570a;
+        box-shadow: 0 0 15px rgba(196, 87, 10, 0.4);
+      }
+
+      /* Responsive cursor hide on mobile */
+      @media (max-width: 860px) {
+        #cur-dot,
+        #cur-ring {
+          display: none;
+        }
+
+        * {
+          cursor: auto !important;
+        }
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(244, 239, 230, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        border-bottom: 1px solid rgba(27, 79, 114, 0.1);
+        cursor: none;
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-logo {
+        font-family: "Orbitron", monospace;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1b4f72;
+        text-decoration: none;
+        cursor: none;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+        align-items: center;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: color 0.3s;
+        cursor: none;
+      }
+
+      .nav-links a:hover {
+        color: #c4570a;
+      }
+
+      .hire-btn {
+        background: #1b4f72;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: none;
+        transition: all 0.3s;
+      }
+
+      .hire-btn:hover {
+        background: #c4570a;
+      }
+
+      .hamburger {
+        display: none;
+        flex-direction: column;
+        cursor: none;
+        background: none;
+        border: none;
+        gap: 5px;
+      }
+
+      .hamburger span {
+        width: 25px;
+        height: 3px;
+        background: #1b4f72;
+        border-radius: 2px;
+        transition: all 0.3s;
+      }
+
+      .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(8px, 8px);
+      }
+
+      .hamburger.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
+
+      .mobile-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(244, 239, 230, 0.98);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1rem;
+      }
+
+      .mobile-nav a {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        cursor: none;
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+
+        .hamburger {
+          display: flex;
+        }
+
+        .mobile-nav.active {
+          display: flex;
+        }
+      }
+
+      /* Hero Section */
+      #hero {
+        margin-top: 80px;
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+        cursor: none;
+      }
+
+      .hero-text h1 {
+        font-family: "Orbitron", monospace;
+        font-size: 3.5rem;
+        font-weight: 900;
+        line-height: 1.2;
+        color: #1b4f72;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .hero-text h1 span {
+        display: block;
+        color: #c4570a;
+      }
+
+      .hero-role {
+        font-size: 1.5rem;
+        color: #c4570a;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .hero-bio {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 2rem;
+        line-height: 1.8;
+        cursor: none;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        cursor: none;
+      }
+
+      .btn {
+        padding: 0.9rem 1.8rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: none;
+        transition: all 0.3s;
+        font-size: 1rem;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: #1b4f72;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #c4570a;
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: #1b4f72;
+        border: 2px solid #1b4f72;
+      }
+
+      .btn-secondary:hover {
+        background: #1b4f72;
+        color: white;
+      }
+
+      .terminal-card {
+        background: #1b4f72;
+        color: #a6d8ff;
+        padding: 1.5rem;
+        border-radius: 4px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        cursor: none;
+      }
+
+      .terminal-card .prompt {
+        color: #c4570a;
+        font-weight: 600;
+      }
+
+      .terminal-card .output {
+        color: #a6d8ff;
+        margin-bottom: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        #hero {
+          grid-template-columns: 1fr;
+          padding: 2rem 1rem;
+        }
+
+        .hero-text h1 {
+          font-size: 2.5rem;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      /* Ticker */
+      .ticker-container {
+        background: #1b4f72;
+        color: white;
+        padding: 1.5rem 0;
+        overflow: hidden;
+        cursor: none;
+      }
+
+      .ticker {
+        display: flex;
+        animation: scroll-left 30s linear infinite;
+        gap: 2rem;
+        width: max-content;
+        cursor: none;
+      }
+
+      .ticker:hover {
+        animation-play-state: paused;
+      }
+
+      .ticker-item {
+        white-space: nowrap;
+        font-weight: 600;
+        cursor: none;
+      }
+
+      @keyframes scroll-left {
+        0% {
+          transform: translateX(100vw);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      /* About Section */
+      #about {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: none;
+      }
+
+      .section-title {
+        font-family: "Orbitron", monospace;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1b4f72;
+        margin-bottom: 2rem;
+        cursor: none;
+      }
+
+      .about-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 3rem;
+        cursor: none;
+      }
+
+      .about-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 2rem;
+        cursor: none;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        cursor: none;
+      }
+
+      .stat {
+        background: rgba(27, 79, 114, 0.08);
+        padding: 1.5rem;
+        border-radius: 4px;
+        text-align: center;
+        cursor: none;
+      }
+
+      .stat-number {
+        font-family: "Orbitron", monospace;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1b4f72;
+        cursor: none;
+      }
+
+      .stat-label {
+        color: #555;
+        font-weight: 500;
+        cursor: none;
+      }
+
+      .about-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-bottom: 2rem;
+        cursor: none;
+      }
+
+      .chip {
+        background: #c4570a;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: none;
+        transition: all 0.3s;
+      }
+
+      .chip:hover {
+        transform: scale(1.05);
+      }
+
+      .info-card {
+        background: rgba(27, 79, 114, 0.08);
+        padding: 1.5rem;
+        border-radius: 4px;
+        cursor: none;
+      }
+
+      .info-card h3 {
+        font-family: "Orbitron", monospace;
+        color: #1b4f72;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+        cursor: none;
+      }
+
+      .info-item strong {
+        color: #1b4f72;
+        min-width: 80px;
+        cursor: none;
+      }
+
+      @media (max-width: 768px) {
+        #about {
+          padding: 2rem 1rem;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .about-content {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Experience Section */
+      #experience {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: none;
+      }
+
+      .exp-card {
+        background: rgba(27, 79, 114, 0.08);
+        padding: 2rem;
+        border-radius: 4px;
+        border-left: 4px solid #c4570a;
+        margin-bottom: 2rem;
+        cursor: none;
+      }
+
+      .exp-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .exp-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #1b4f72;
+        cursor: none;
+      }
+
+      .exp-company {
+        color: #c4570a;
+        font-weight: 600;
+        cursor: none;
+      }
+
+      .exp-date {
+        color: #999;
+        font-size: 0.9rem;
+        cursor: none;
+      }
+
+      .exp-desc ul {
+        margin-left: 1.5rem;
+        cursor: none;
+      }
+
+      .exp-desc li {
+        margin-bottom: 0.8rem;
+        color: #555;
+        cursor: none;
+      }
+
+      /* Skills Section */
+      #skills {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: none;
+      }
+
+      .skill-group {
+        margin-bottom: 2rem;
+        cursor: none;
+      }
+
+      .skill-category {
+        font-family: "Orbitron", monospace;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1b4f72;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .skill-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        cursor: none;
+      }
+
+      .skill-item {
+        background: rgba(27, 79, 114, 0.08);
+        padding: 0.8rem 1.2rem;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #333;
+        cursor: none;
+        transition: all 0.3s;
+      }
+
+      .skill-item:hover {
+        background: #1b4f72;
+        color: white;
+      }
+
+      .skill-badge {
+        font-size: 0.75rem;
+        background: #c4570a;
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        margin-left: 0.5rem;
+        cursor: none;
+      }
+
+      @media (max-width: 768px) {
+        #skills {
+          padding: 2rem 1rem;
+        }
+      }
+
+      /* Projects Section */
+      #projects {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: none;
+      }
+
+      .project-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        align-items: stretch;
+        cursor: none;
+      }
+
+      .project-card:nth-child(even) > .project-left {
+        order: 2;
+      }
+
+      .project-card:nth-child(even) > .project-right {
+        order: 1;
+      }
+
+      .project-left {
+        background: #1b4f72;
+        color: white;
+        padding: 2rem;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        cursor: none;
+      }
+
+      .project-right {
+        padding: 2rem;
+        border-radius: 4px;
+        background: rgba(27, 79, 114, 0.08);
+        cursor: none;
+      }
+
+      .project-badge {
+        display: inline-block;
+        background: #c4570a;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .project-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .project-left .project-title {
+        color: white;
+      }
+
+      .project-right .project-title {
+        color: #1b4f72;
+      }
+
+      .project-desc {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        cursor: none;
+      }
+
+      .project-stack {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.85rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        cursor: none;
+      }
+
+      .stack-tag {
+        background: rgba(196, 87, 10, 0.2);
+        color: #c4570a;
+        padding: 0.3rem 0.6rem;
+        border-radius: 3px;
+        cursor: none;
+      }
+
+      .project-left .stack-tag {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .project-link {
+        display: inline-block;
+        background: #c4570a;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.3s;
+        cursor: none;
+        border: none;
+        font-weight: 600;
+      }
+
+      .project-left .project-link {
+        background: white;
+        color: #1b4f72;
+      }
+
+      .project-link:hover {
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        #projects {
+          padding: 2rem 1rem;
+        }
+
+        .project-card {
+          grid-template-columns: 1fr;
+        }
+
+        .project-card:nth-child(even) > .project-left,
+        .project-card:nth-child(even) > .project-right {
+          order: initial;
+        }
+      }
+
+      /* Achievements Section */
+      #achievements {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: none;
+      }
+
+      .ach-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        cursor: none;
+      }
+
+      .ach-card {
+        background: rgba(27, 79, 114, 0.08);
+        padding: 1.8rem;
+        border-radius: 4px;
+        text-align: center;
+        cursor: none;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+      }
+
+      .ach-card:hover {
+        border-color: #c4570a;
+        transform: translateY(-5px);
+      }
+
+      .ach-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .ach-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #1b4f72;
+        margin-bottom: 0.8rem;
+        cursor: none;
+      }
+
+      .ach-desc {
+        color: #555;
+        font-size: 0.95rem;
+        cursor: none;
+      }
+
+      /* Connect Section */
+      #connect {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: none;
+      }
+
+      .connect-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        cursor: none;
+      }
+
+      .cc {
+        background: rgba(27, 79, 114, 0.08);
+        padding: 2rem;
+        border-radius: 4px;
+        text-align: center;
+        cursor: none;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .cc:hover {
+        background: #1b4f72;
+        color: white;
+        transform: translateY(-5px);
+      }
+
+      .cc-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        cursor: none;
+      }
+
+      .cc h3 {
+        font-family: "Orbitron", monospace;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        cursor: none;
+      }
+
+      .cc p {
+        cursor: none;
+      }
+
+      /* Contact Section */
+      #contact {
+        padding: 4rem 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: start;
+        cursor: none;
+      }
+
+      .contact-info {
+        cursor: none;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        cursor: none;
+      }
+
+      .contact-label {
+        font-weight: 600;
+        color: #1b4f72;
+        cursor: none;
+      }
+
+      .contact-value {
+        color: #555;
+        cursor: none;
+      }
+
+      .contact-value a {
+        color: #c4570a;
+        text-decoration: none;
+        cursor: none;
+      }
+
+      .contact-value a:hover {
+        text-decoration: underline;
+      }
+
+      .availability-badge {
+        display: inline-block;
+        background: #c4570a;
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        cursor: none;
+      }
+
+      .contact-form {
+        background: rgba(27, 79, 114, 0.08);
+        padding: 2rem;
+        border-radius: 4px;
+        cursor: none;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        cursor: none;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1b4f72;
+        cursor: none;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: "IBM Plex Sans", sans-serif;
+        font-size: 1rem;
+        cursor: none;
+        background: white;
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #1b4f72;
+        box-shadow: 0 0 0 3px rgba(27, 79, 114, 0.1);
+      }
+
+      .form-submit {
+        background: #1b4f72;
+        color: white;
+        padding: 0.9rem 2rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: none;
+        transition: all 0.3s;
+        width: 100%;
+      }
+
+      .form-submit:hover {
+        background: #c4570a;
+      }
+
+      .form-success {
+        background: #90ee90;
+        color: #228b22;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+        display: none;
+        cursor: none;
+      }
+
+      .form-success.show {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        #contact {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Footer */
+      footer {
+        background: #1b4f72;
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        cursor: none;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        cursor: none;
+      }
+
+      .footer-logo {
+        font-family: "Orbitron", monospace;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        cursor: none;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        cursor: none;
+      }
+
+      .footer-links a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s;
+        cursor: none;
+      }
+
+      .footer-links a:hover {
+        color: #c4570a;
+      }
+
+      .footer-copyright {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        cursor: none;
+      }
+
+      /* Scroll Reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.6s ease-out,
+          transform 0.6s ease-out;
+      }
+
+      .reveal.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Custom Cursor -->
+    <div id="cur-dot"></div>
+    <div id="cur-ring"></div>
+
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <a href="#" class="nav-logo">GAUTAM.DEV</a>
+        <ul class="nav-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#achievements">Achievements</a></li>
+          <li><a href="#connect">Connect</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#contact" class="hire-btn">Hire Me</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="mobile-nav" id="mobile-nav">
+          <a href="#about">About</a>
+          <a href="#experience">Experience</a>
+          <a href="#skills">Skills</a>
+          <a href="#projects">Projects</a>
+          <a href="#achievements">Achievements</a>
+          <a href="#connect">Connect</a>
+          <a href="#contact">Contact</a>
+          <a href="#contact" class="hire-btn">Hire Me</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="reveal">
+      <div class="hero-text">
+        <h1>KADAPPAGARI<span>GAUTAM</span><span>REDDY</span></h1>
+        <p class="hero-role">IoT & Embedded Systems Engineer</p>
+        <p class="hero-bio">
+          CS Undergraduate at GITAM University exploring the intersection of
+          hardware and software. Passionate about microcontrollers, robotics,
+          and real-time systems. Open to internships and entry-level roles.
+        </p>
+        <div class="hero-buttons">
+          <a href="#projects" class="btn btn-primary">View Projects</a>
+          <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+        </div>
+      </div>
+      <div class="terminal-card">
+        <div class="output">
+          <span class="prompt">gautam@portfolio</span>:~$ whoami
+        </div>
+        <div class="output">Kadappagari Gautam Reddy</div>
+        <div class="output"></div>
+        <div class="output">
+          <span class="prompt">gautam@portfolio</span>:~$ echo $ROLE
+        </div>
+        <div class="output">IoT & Embedded Systems Engineer</div>
+        <div class="output"></div>
+        <div class="output">
+          <span class="prompt">gautam@portfolio</span>:~$ ls projects/
+        </div>
+        <div class="output">HiDrop RC-Car Robotic-Arm</div>
+        <div class="output"></div>
+        <div class="output">
+          <span class="prompt">gautam@portfolio</span>:~$ cat status.txt
+        </div>
+        <div class="output">Open to internships and entry-level roles</div>
+      </div>
+    </section>
+
+    <!-- Ticker -->
+    <div class="ticker-container">
+      <div class="ticker" id="ticker">
+        <span class="ticker-item">• C/C++</span>
+        <span class="ticker-item">• Python</span>
+        <span class="ticker-item">• ESP32</span>
+        <span class="ticker-item">• Arduino</span>
+        <span class="ticker-item">• Ultrasonic Sensors</span>
+        <span class="ticker-item">• LiDAR</span>
+        <span class="ticker-item">• PWM Control</span>
+        <span class="ticker-item">• ROS</span>
+        <span class="ticker-item">• Git & GitHub</span>
+        <span class="ticker-item">• Linux/Ubuntu</span>
+        <span class="ticker-item">• Hardware Integration</span>
+        <span class="ticker-item">• Real-time Data Acquisition</span>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="reveal">
+      <h2 class="section-title">About</h2>
+      <div class="about-content">
+        <div>
+          <p class="about-text">
+            I'm a third-year CS undergraduate at GITAM University, Bengaluru
+            with a passion for IoT and embedded systems. I have hands-on
+            experience developing IoT applications with microcontrollers,
+            embedded programming, and hardware-software integration. Through
+            internships and personal projects, I've built autonomous robots,
+            wireless control systems, and real-time data acquisition platforms.
+          </p>
+          <p class="about-text">
+            When I'm not coding or debugging embedded systems, I'm exploring new
+            microcontroller platforms, learning about robotics, or contributing
+            to open-source projects.
+          </p>
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-number">3+</div>
+              <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat">
+              <div class="stat-number">🥇</div>
+              <div class="stat-label">IoT Prize</div>
+            </div>
+          </div>
+          <div class="about-skills">
+            <div class="chip">ESP32</div>
+            <div class="chip">Arduino</div>
+            <div class="chip">C/C++</div>
+            <div class="chip">Python</div>
+            <div class="chip">Real-time Systems</div>
+            <div class="chip">Hardware Integration</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <h3>Contact Information</h3>
+          <div class="info-item">
+            <strong>Email:</strong>
+            <span
+              ><a href="mailto:gautamreddy833@gmail.com"
+                >gautamreddy833@gmail.com</a
+              ></span
+            >
+          </div>
+          <div class="info-item">
+            <strong>Phone:</strong>
+            <span>+91 83320 12844</span>
+          </div>
+          <div class="info-item">
+            <strong>Location:</strong>
+            <span>Bengaluru, Karnataka, India</span>
+          </div>
+          <div class="info-item">
+            <strong>GitHub:</strong>
+            <span
+              ><a href="https://github.com/gautam833844" target="_blank"
+                >github.com/gautam833844</a
+              ></span
+            >
+          </div>
+          <div class="info-item">
+            <strong>LinkedIn:</strong>
+            <span
+              ><a
+                href="https://www.linkedin.com/in/gautam-reddy-k-a78823293/"
+                target="_blank"
+                >gautam-reddy-k</a
+              ></span
+            >
+          </div>
+          <div class="info-item">
+            <strong>University:</strong>
+            <span>GITAM University (2023–2027)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="reveal">
+      <h2 class="section-title">Experience</h2>
+      <div class="exp-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">IoT Intern</div>
+            <div class="exp-company">Plasmid Innovation Ltd, Bengaluru</div>
+          </div>
+          <div class="exp-date">May 2025 – July 2025</div>
+        </div>
+        <div class="exp-desc">
+          <ul>
+            <li>
+              Developed IoT applications with microcontrollers, implementing
+              embedded programming solutions for real-time systems
+            </li>
+            <li>
+              Performed hardware-software integration and debugging, ensuring
+              robust system performance
+            </li>
+            <li>
+              Acquired hands-on experience with real-time data acquisition and
+              sensor integration
+            </li>
+            <li>
+              Earned Letter of Recommendation for technical expertise and
+              project execution
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="reveal">
+      <h2 class="section-title">Skills</h2>
+
+      <div class="skill-group">
+        <div class="skill-category">Languages</div>
+        <div class="skill-row">
+          <div class="skill-item">
+            C <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            C++ <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            Python <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            HTML <span class="skill-badge">Secondary</span>
+          </div>
+          <div class="skill-item">
+            CSS <span class="skill-badge">Secondary</span>
+          </div>
+          <div class="skill-item">
+            Java <span class="skill-badge">Secondary</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-category">Embedded Systems</div>
+        <div class="skill-row">
+          <div class="skill-item">
+            ESP32 <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            Arduino Uno <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            Arduino Mega <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            DC Motors <span class="skill-badge">Secondary</span>
+          </div>
+          <div class="skill-item">
+            Servo Motors <span class="skill-badge">Secondary</span>
+          </div>
+          <div class="skill-item">
+            Motor Drivers <span class="skill-badge">Secondary</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-category">Sensors</div>
+        <div class="skill-row">
+          <div class="skill-item">
+            Ultrasonic <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            LiDAR <span class="skill-badge">Secondary</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-category">Robotics</div>
+        <div class="skill-row">
+          <div class="skill-item">
+            PWM Motor Control <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            Obstacle Avoidance <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            System Integration <span class="skill-badge">Secondary</span>
+          </div>
+          <div class="skill-item">
+            ROS <span class="skill-badge">Secondary</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-category">Tools & Platforms</div>
+        <div class="skill-row">
+          <div class="skill-item">
+            Git & GitHub <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            Arduino IDE <span class="skill-badge">Primary</span>
+          </div>
+          <div class="skill-item">
+            Linux/Ubuntu <span class="skill-badge">Secondary</span>
+          </div>
+          <div class="skill-item">
+            VS Code <span class="skill-badge">Secondary</span>
+          </div>
+          <div class="skill-item">
+            GitHub Copilot <span class="skill-badge">Secondary</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="reveal">
+      <h2 class="section-title">Projects</h2>
+
+      <div class="project-card">
+        <div class="project-left">
+          <div class="project-badge">
+            Technical Lead – Embedded & Integration
+          </div>
+          <h3 class="project-title">HiDrop</h3>
+          <p class="project-desc">
+            Autonomous Indoor Delivery Robot with advanced navigation and
+            obstacle avoidance using ultrasonic sensors and LiDAR. Seamless
+            hardware-software integration for real-time autonomous operation.
+          </p>
+          <div class="project-stack">
+            <span class="stack-tag">ESP32</span>
+            <span class="stack-tag">Arduino Mega</span>
+            <span class="stack-tag">Ultrasonic</span>
+            <span class="stack-tag">LiDAR</span>
+            <span class="stack-tag">ROS</span>
+            <span class="stack-tag">C/C++</span>
+            <span class="stack-tag">Python</span>
+          </div>
+          <a
+            href="https://github.com/gautam833844"
+            target="_blank"
+            class="project-link"
+            >View on GitHub →</a
+          >
+        </div>
+        <div class="project-right">
+          <h3 class="project-title">HiDrop</h3>
+          <p class="project-desc">
+            A sophisticated autonomous indoor delivery robot project where I led
+            embedded systems and hardware integration. The robot uses advanced
+            sensor fusion for reliable autonomous navigation and can navigate
+            complex indoor environments while avoiding obstacles in real-time.
+          </p>
+          <p class="project-desc">
+            <strong>Key Technical Achievements:</strong> Implemented real-time
+            sensor data processing, integrated multiple microcontroller
+            platforms, designed PWM control algorithms for motor coordination,
+            and deployed ROS for autonomous navigation stacks.
+          </p>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-left">
+          <h3 class="project-title">RC Car</h3>
+          <p class="project-desc">
+            Wireless real-time motor control system with mobile interface.
+            Features precise PWM control for smooth acceleration and responsive
+            steering through wireless communication protocols.
+          </p>
+          <div class="project-stack">
+            <span class="stack-tag">ESP32</span>
+            <span class="stack-tag">PWM</span>
+            <span class="stack-tag">Motor Drivers</span>
+            <span class="stack-tag">C++</span>
+          </div>
+          <a
+            href="https://github.com/gautam833844"
+            target="_blank"
+            class="project-link"
+            >View on GitHub →</a
+          >
+        </div>
+        <div class="project-right">
+          <h3 class="project-title">RC Car using ESP32</h3>
+          <p class="project-desc">
+            A wirelessly controlled robot car with real-time PWM motor control.
+            Built with ESP32 for wireless communication and motor interface,
+            this project demonstrates embedded systems principles and real-time
+            control implementation.
+          </p>
+          <p class="project-desc">
+            <strong>Features:</strong> Wireless control via mobile interface,
+            precise PWM-based speed control, responsive steering algorithms, and
+            reliable motor driver integration for stable operation.
+          </p>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-left">
+          <div class="project-badge">🥇 1st Prize</div>
+          <h3 class="project-title">Robotic Arm</h3>
+          <p class="project-desc">
+            Multi-axis servo-controlled robotic arm with precise PWM motion
+            control. Demonstrates advanced motion coordination and
+            hardware-software integration for complex robotic systems.
+          </p>
+          <div class="project-stack">
+            <span class="stack-tag">Arduino Uno</span>
+            <span class="stack-tag">Servo Motors</span>
+            <span class="stack-tag">PWM</span>
+            <span class="stack-tag">C++</span>
+          </div>
+          <a
+            href="https://github.com/gautam833844"
+            target="_blank"
+            class="project-link"
+            >View on GitHub →</a
+          >
+        </div>
+        <div class="project-right">
+          <h3 class="project-title">Robotic Arm using Arduino Uno</h3>
+          <p class="project-desc">
+            A sophisticated robotic arm project that won 1st Prize in the IoT
+            competition. Features servo-controlled multi-axis movement with
+            synchronized PWM control for smooth, coordinated motion across
+            multiple degrees of freedom.
+          </p>
+          <p class="project-desc">
+            <strong>Technical Highlights:</strong> Implemented servo motion
+            algorithms, coordinated multi-axis PWM signals, optimized real-time
+            control loops, and achieved precision movement control for
+            industrial-grade robotic manipulation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Achievements Section -->
+    <section id="achievements" class="reveal">
+      <h2 class="section-title">Achievements</h2>
+      <div class="ach-grid">
+        <div class="ach-card">
+          <div class="ach-icon">🥇</div>
+          <h3 class="ach-title">1st Prize – IoT Competition</h3>
+          <p class="ach-desc">
+            Won first prize in IoT competition for Robotic Arm project
+            demonstrating advanced embedded systems and hardware integration.
+          </p>
+        </div>
+        <div class="ach-card">
+          <div class="ach-icon">📜</div>
+          <h3 class="ach-title">Letter of Recommendation</h3>
+          <p class="ach-desc">
+            Earned Letter of Recommendation from Plasmid Innovation Ltd for
+            technical expertise, project execution, and professional
+            contributions.
+          </p>
+        </div>
+        <div class="ach-card">
+          <div class="ach-icon">🚀</div>
+          <h3 class="ach-title">Hackathons & Technical Workshops</h3>
+          <p class="ach-desc">
+            Active participant in multiple hackathons and technical workshops,
+            continuously enhancing skills in IoT, embedded systems, and
+            robotics.
+          </p>
+        </div>
+        <div class="ach-card">
+          <div class="ach-icon">👥</div>
+          <h3 class="ach-title">Technical Lead – HiDrop Robot</h3>
+          <p class="ach-desc">
+            Led embedded systems and hardware integration for the autonomous
+            delivery robot project, demonstrating leadership and technical
+            proficiency.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connect Section -->
+    <section id="connect" class="reveal">
+      <h2 class="section-title">Connect</h2>
+      <div class="connect-grid">
+        <a href="https://github.com/gautam833844" target="_blank" class="cc">
+          <svg class="cc-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+            />
+          </svg>
+          <h3>GitHub</h3>
+          <p>@gautam833844</p>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/gautam-reddy-k-a78823293/"
+          target="_blank"
+          class="cc"
+        >
+          <svg class="cc-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M20.447 20.452h-3.554v-5.569c0-1.328-.475-2.236-1.986-2.236-1.081 0-1.722.722-2.004 1.418-.103.249-.129.597-.129.946v5.441h-3.554s.05-8.814 0-9.752h3.554v1.381c.43-.664 1.199-1.61 2.920-1.61 2.134 0 3.734 1.39 3.734 4.379v5.601zM5.337 5.432c-1.144 0-1.915-.758-1.915-1.706 0-.955.771-1.706 1.915-1.706 1.144 0 1.915.751 1.915 1.706 0 .948-.771 1.706-1.915 1.706zm1.589 14.588V8.771H3.748v11.249h3.178zM22.224 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.224 0z"
+            />
+          </svg>
+          <h3>LinkedIn</h3>
+          <p>gautam-reddy-k</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="reveal">
+      <div class="contact-info">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-item">
+          <span class="contact-label">📧 Email:</span>
+          <span class="contact-value"
+            ><a href="mailto:gautamreddy833@gmail.com"
+              >gautamreddy833@gmail.com</a
+            ></span
+          >
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">📱 Phone:</span>
+          <span class="contact-value">+91 83320 12844</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">📍 Location:</span>
+          <span class="contact-value">Bengaluru, Karnataka, India</span>
+        </div>
+        <div class="availability-badge">
+          ✓ Open to Internships & Entry-Level Roles
+        </div>
+      </div>
+      <form class="contact-form" onsubmit="doSubmit(event)" novalidate>
+        <div class="form-success" id="form-success">
+          ✓ Message sent successfully! I'll get back to you soon.
+        </div>
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Your Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" required />
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Message</button>
+      </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="reveal">
+      <div class="footer-content">
+        <div class="footer-logo">GAUTAM.DEV</div>
+        <div class="footer-links">
+          <a href="#about">About</a>
+          <a href="#experience">Experience</a>
+          <a href="#skills">Skills</a>
+          <a href="#projects">Projects</a>
+          <a href="#achievements">Achievements</a>
+          <a href="#connect">Connect</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-copyright">
+          © 2025 Kadappagari Gautam Reddy. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Custom Cursor Logic
+      const curDot = document.getElementById("cur-dot");
+      const curRing = document.getElementById("cur-ring");
+      let mouseX = 0;
+      let mouseY = 0;
+      let ringX = 0;
+      let ringY = 0;
+
+      document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        document.body.classList.add("cursor-active");
+
+        curDot.style.left = mouseX - 5 + "px";
+        curDot.style.top = mouseY - 5 + "px";
+
+        const lerp = 0.13;
+        ringX += (mouseX - ringX) * lerp;
+        ringY += (mouseY - ringY) * lerp;
+        curRing.style.left = ringX - 18 + "px";
+        curRing.style.top = ringY - 18 + "px";
+      });
+
+      // Cursor hover effect on interactive elements
+      const interactiveElements = document.querySelectorAll(
+        "a, button, .chip, .pc, .cc, .ach-card",
+      );
+      interactiveElements.forEach((el) => {
+        el.addEventListener("mouseenter", () => {
+          curDot.classList.add("hover");
+          curRing.classList.add("hover");
+        });
+        el.addEventListener("mouseleave", () => {
+          curDot.classList.remove("hover");
+          curRing.classList.remove("hover");
+        });
+      });
+
+      // Hamburger Menu
+      const hamburger = document.getElementById("hamburger");
+      const mobileNav = document.getElementById("mobile-nav");
+
+      hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("active");
+        mobileNav.classList.toggle("active");
+      });
+
+      // Close mobile nav when a link is clicked
+      document.querySelectorAll(".mobile-nav a").forEach((link) => {
+        link.addEventListener("click", () => {
+          hamburger.classList.remove("active");
+          mobileNav.classList.remove("active");
+        });
+      });
+
+      // Scroll Reveal with IntersectionObserver
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".reveal").forEach((el) => {
+        observer.observe(el);
+      });
+
+      // Contact Form Handler
+      function doSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const subject = document.getElementById("subject").value;
+        const message = document.getElementById("message").value;
+
+        if (name && email && subject && message) {
+          const successMsg = document.getElementById("form-success");
+          successMsg.classList.add("show");
+          form.reset();
+
+          setTimeout(() => {
+            successMsg.classList.remove("show");
+          }, 5000);
+        }
+      }
+
+      // Ticker animation enhancement
+      const ticker = document.getElementById("ticker");
+      if (ticker) {
+        const tickerHTML = ticker.innerHTML;
+        ticker.innerHTML = tickerHTML + tickerHTML;
+      }
+    </script>
+  </body>
+</html>
